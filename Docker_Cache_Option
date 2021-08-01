@@ -1,0 +1,55 @@
+- [**Buildall.sh](http://buildall.sh)** - Added option to input whether or not the user wants to disable cache (1 if they want to disable and 0 if they do not want to disable)
+    - echo is basically like a System.out.println() that gets printed everytime you run ./buildall.sh
+    - exit so it does not run the entire file every time you test the edit
+
+![](images/Image1.PNG)
+
+
+${DISABLE_CACHE} ${rest} ${name}/
+```
+
+- **action.yml** - added in the description and requirement of disable_cache variable
+
+```bash
+disable_cache:
+	description: 'This will disable the Docker build cache when building an image'
+	required: false
+```
+
+- **build-and-publish.yml** - set the default value of disable_cache to 0 since it runs with cache by default
+
+```bash
+disable_cache: 0 #this should only be set to '1' if you want to disable the docker image cache
+```
+
+- To test the edits and re-build the [buildall.sh](http://buildall.sh) file, I went to terminal and first changed the value of the disable_cache variable to be 1 (signaling no cache) by typing
+
+```bash
+**export INPUT_DISABLE_CACHE=1**
+```
+
+- Then I tried building the [buildall.sh](http://buildall.sh) script file by saying **./buildall.sh** but I got the following error:
+
+```bash
+fatal: no tag exactly matches 'b75aad0ca715741a86aea51339013e5ddede9765'
+Current tag could not be located
+Perhaps you meant to run incr.sh ?
+```
+
+- [**buildall-common.sh**](http://buildall-common.sh) - The error means we were not putting in the tag exactly as it was supposed to be so I went in the buildall-common.sh file and removed the need for the tag to match exactly to run (line in the comment is what it was before while line above is what I changed it to)
+
+```bash
+BUILD_TAG=$(git describe --tags || true)  # The git tag for the images we are building
+# BUILD_TAG=$(git describe --exact-match --tags || true)  # The git tag for the images we are building
+```
+
+- I saved all changes and rebuilt the [buildall.sh](http://buildall.sh) file after changing the value of disable_cache to be 1 and got the following response
+
+    ![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f17dbd68-4455-49d0-b24d-2fd0ea95b4fe/Screen_Shot_2021-06-01_at_2.19.31_PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f17dbd68-4455-49d0-b24d-2fd0ea95b4fe/Screen_Shot_2021-06-01_at_2.19.31_PM.png)
+
+**Conclusion:** 
+
+- **This edit allows developers to specify whether they want a build to run with or without cache**
+    - T**he default is no cache**
+    - I**f they want cache, they have to type  "export INPUT_DISABLE_CACHE=1" in terminal before building the file**
+    - **To specify with cache again, they have to type "export INPUT_DISABLE_CACHE=0" in terminal before building the file**
