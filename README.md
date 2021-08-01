@@ -1,2 +1,2 @@
 # HPCC-Internship
-- Nikita Jha
+
